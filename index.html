@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>资助早知道</title>
+<meta name="description" content="青岛学生资助政策查询，个人公益项目">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+[hidden]{display:none!important}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* 布局：单列手机优先，上方三步问答，下方即时结果；像一张填好的申请清单 */
+:root {
+  --bg: #f3f6f7;
+  --surface: #ffffff;
+  --ink: #17262b;
+  --muted: #56676d;
+  --line: #d6e0e3;
+  --sea: #0d6a73;
+  --sea-soft: #e1f0f1;
+  --sun: #f3c94b;
+  --sun-soft: #fdf4d6;
+  --warn: #9a3b1d;
+  --font: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --num: "DIN Alternate", "Bahnschrift", "Roboto Condensed", var(--font);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a1c; --surface: #172427; --ink: #e6eef0; --muted: #9db0b5; --line: #2a3b3f;
+    --sea: #5cc3cb; --sea-soft: #173a3e; --sun: #e9bd3a; --sun-soft: #3a3217; --warn: #f0a585;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a1c; --surface: #172427; --ink: #e6eef0; --muted: #9db0b5; --line: #2a3b3f;
+  --sea: #5cc3cb; --sea-soft: #173a3e; --sun: #e9bd3a; --sun-soft: #3a3217; --warn: #f0a585;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font);
+  font-size: 16px; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+.wrap { max-width: 640px; margin: 0 auto; }
+header.top { padding-block: 28px 18px; display: grid; gap: 6px; }
+.badge { justify-self: start; font-size: 12px; letter-spacing: .08em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+h1 { font-size: 28px; line-height: 1.25; margin: 4px 0 0; text-wrap: balance; }
+h1 span { color: var(--sea); }
+.lead { margin: 0; color: var(--muted); }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 12px; margin-top: 14px; }
+.step h2 { margin: 0; font-size: 17px; display: flex; gap: 10px; align-items: baseline; }
+.step h2 .n { font-family: var(--num); color: var(--sea); font-size: 15px; }
+.hint { margin: 0; color: var(--muted); font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip span { display: inline-block; padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 15px; line-height: 1.3; }
+.chip input:checked + span { border-color: var(--sea); background: var(--sea-soft); color: var(--ink); font-weight: 600; }
+.chip input:focus-visible + span { outline: 3px solid var(--sun); outline-offset: 2px; }
+.sub[hidden] { display: none; }
+.sub { display: grid; gap: 8px; padding-top: 4px; border-top: 1px dashed var(--line); }
+.sub-label { font-size: 14px; color: var(--muted); }
+
+.results { margin-top: 26px; display: grid; gap: 12px; }
+.results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.results-head h2 { margin: 0; font-size: 20px; }
+.total { font-size: 14px; color: var(--muted); }
+.total b { font-family: var(--num); color: var(--sea); font-size: 18px; font-variant-numeric: tabular-nums; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 8px; }
+.card.likely { border-left: 5px solid var(--sea); }
+.card.check { border-left: 5px solid var(--sun); }
+.card-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.card h3 { margin: 0; font-size: 17px; line-height: 1.4; min-width: 0; }
+.amount { text-align: right; white-space: nowrap; font-family: var(--num); font-variant-numeric: tabular-nums; }
+.amount b { font-size: 22px; color: var(--sea); }
+.amount small { display: block; font-size: 12px; color: var(--muted); font-family: var(--font); }
+.tag { justify-self: start; font-size: 12px; padding: 1px 8px; border-radius: 6px; }
+.tag.likely { background: var(--sea-soft); color: var(--sea); }
+.tag.check { background: var(--sun-soft); color: var(--ink); }
+.card p { margin: 0; font-size: 15px; }
+.card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
+.card dt { color: var(--muted); }
+.card dd { margin: 0; min-width: 0; }
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 16px 18px; color: var(--muted); }
+
+.box { margin-top: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 10px; }
+.box h2 { margin: 0; font-size: 17px; }
+.box ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
+.phone { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.phone code { font-family: var(--num); font-size: 18px; font-variant-numeric: tabular-nums; background: var(--sea-soft); padding: 2px 10px; border-radius: 8px; user-select: all; }
+button.copy { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+button.copy:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.alert { background: var(--sun-soft); border: 1px solid var(--sun); }
+footer { margin-top: 26px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+footer a, .box a { color: var(--sea); }
+@media (prefers-reduced-motion: no-preference) { .card { animation: in .25s ease both; } @keyframes in { from { transform: translateY(4px); } to { transform: none; } } }
+@media (max-width: 420px) { h1 { font-size: 24px; } .card-top { flex-direction: column; } .amount { text-align: left; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <span class="badge">个人公益项目 · 非政府官方网站</span>
+    <h1>孩子上学，家里能领<span>哪些资助</span>？</h1>
+    <p class="lead">回答三个问题，看看青岛的学生资助政策里，你家可能符合哪些。不用填姓名，不收集任何个人信息。</p>
+  </header>
+
+  <form id="q" autocomplete="off">
+    <section class="step">
+      <h2><span class="n">1</span>孩子现在读什么？</h2>
+      <div class="chips" role="radiogroup" aria-label="学段">
+        <label class="chip"><input type="radio" name="stage" id="st-kg" value="kg"><span>幼儿园</span></label>
+        <label class="chip"><input type="radio" name="stage" id="st-pri" value="pri" checked><span>小学</span></label>
+        <label class="chip"><input type="radio" name="stage" id="st-mid" value="mid"><span>初中</span></label>
+        <label class="chip"><input type="radio" name="stage" id="st-high" value="high"><span>普通高中</span></label>
+        <label class="chip"><input type="radio" name="stage" id="st-voc" value="voc"><span>中职学校</span></label>
+      </div>
+      <div class="sub" id="sub-board">
+        <span class="sub-label">孩子在学校住宿吗？</span>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="board" id="bd-no" value="no" checked><span>不住校</span></label>
+          <label class="chip"><input type="radio" name="board" id="bd-yes" value="yes"><span>住校</span></label>
+        </div>
+      </div>
+      <div class="sub" id="sub-voc" hidden>
+        <span class="sub-label">读的是涉农专业吗？</span>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="agri" id="ag-no" value="no" checked><span>不是</span></label>
+          <label class="chip"><input type="radio" name="agri" id="ag-yes" value="yes"><span>是，涉农专业</span></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="step">
+      <h2><span class="n">2</span>家里或孩子属于下面哪些情况？</h2>
+      <p class="hint">可以多选。不确定的先不选，结果里会提示可以问学校的项目。</p>
+      <div class="chips" id="groups">
+        <label class="chip"><input type="checkbox" name="g" id="g-dibao" value="dibao"><span>低保家庭</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-tekun" value="tekun"><span>特困救助供养</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-tuopin" value="tuopin"><span>脱贫享受政策家庭</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-jiance" value="jiance"><span>防止返贫监测帮扶对象</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-guer" value="guer"><span>孤儿</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-wuren" value="wuren"><span>事实无人抚养儿童</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-canji" value="canji"><span>孩子有残疾</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-lieshi" value="lieshi"><span>烈士子女</span></label>
+        <label class="chip"><input type="checkbox" name="g" id="g-kunnan" value="kunnan"><span>不属于以上，但家里经济困难</span></label>
+      </div>
+    </section>
+
+    <section class="step">
+      <h2><span class="n">3</span>孩子在哪类学校？</h2>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="own" id="ow-pub" value="pub" checked><span>公办</span></label>
+        <label class="chip"><input type="radio" name="own" id="ow-pri" value="pri"><span id="ow-pri-label">民办</span></label>
+      </div>
+      <p class="hint" id="own-hint">民办学校的免费项目，一般只按当地公办学校的标准减免，超出部分仍需自付。</p>
+    </section>
+  </form>
+
+  <section class="results" aria-live="polite">
+    <div class="results-head">
+      <h2 id="res-title">可能符合的资助</h2>
+      <span class="total" id="total"></span>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <section class="box">
+    <h2>怎么申请</h2>
+    <ul>
+      <li>除生源地信用助学贷款等少数项目外，学生资助都是<b>开学后向孩子所在的学校或幼儿园申请</b>。</li>
+      <li>提前备好能证明家庭情况的材料（比如低保证、残疾证），具体要交什么以学校通知为准。</li>
+      <li>标“需学校认定”的项目，要先由学校认定为家庭经济困难学生，再按档发放。</li>
+    </ul>
+  </section>
+
+  <section class="box">
+    <h2>不清楚可以打电话问</h2>
+    <p class="hint">青岛市教育局暑期学生资助热线。2026年的集中受理时段为7月1日至9月15日工作日（9:00–11:30、13:30–17:00），现已结束；其他时间请先向孩子所在学校咨询。</p>
+    <div class="phone"><code id="p1">0532-82734236</code><button class="copy" type="button" data-copy="p1">复制号码</button></div>
+    <div class="phone"><code id="p2">0532-81703683</code><button class="copy" type="button" data-copy="p2">复制号码</button></div>
+    <p class="hint">各区（市）也设有资助热线，可向孩子所在学校询问。</p>
+  </section>
+
+  <section class="box alert">
+    <h2>防骗提醒</h2>
+    <p class="hint" style="color:var(--ink)">申请资助是向学校提出的。接到自称资助部门、要求转账或提供银行卡密码的电话和短信，先挂断，再打学校或上面的热线核实。</p>
+  </section>
+
+  <footer>
+    <p>本页为个人公益项目，不是政府或学校的官方网站，只帮助了解政策，不代办申请。所有标准以学校和教育部门的最新通知为准。</p>
+    <p>政策来源：青岛市教育局公布的2026年学生资助政策，见<a href="https://news.qingdaonews.com/wap/2026-06/28/content_23742655.htm" target="_blank" rel="noopener">青岛新闻网（2026年6月28日）</a>、<a href="https://finance.sina.com.cn/roll/2026-06-28/doc-iniexpvw4040948.shtml" target="_blank" rel="noopener">新浪财经转载</a>。</p>
+    <p>内容更新：2026年11月26日</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  // 来源：青岛市教育局2026年学生资助政策（青岛新闻网 2026-06-28）
+  var SPECIAL = ['dibao', 'tekun', 'tuopin', 'jiance', 'guer', 'wuren', 'canji', 'lieshi'];
+  var NAMES = { dibao: '低保家庭', tekun: '特困救助供养', tuopin: '脱贫享受政策家庭', jiance: '防止返贫监测帮扶对象', guer: '孤儿', wuren: '事实无人抚养儿童', canji: '残疾', lieshi: '烈士子女' };
+
+  function pick(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : null; }
+  function groups() { return Array.prototype.map.call(document.querySelectorAll('input[name="g"]:checked'), function (e) { return e.value; }); }
+
+  function build(s) {
+    var g = s.groups, hasSpecial = g.some(function (x) { return SPECIAL.indexOf(x) > -1; });
+    var needy = hasSpecial || g.indexOf('kunnan') > -1;
+    var priv = s.own === 'pri';
+    var out = [];
+    var matched = g.filter(function (x) { return SPECIAL.indexOf(x) > -1; }).map(function (x) { return NAMES[x]; }).join('、');
+
+    if (s.stage === 'kg') {
+      if (hasSpecial) out.push({ kind: 'likely', title: '免除保教费', amt: '全免', unit: priv ? '按公办标准减免' : '公办幼儿园', body: '公办幼儿园免除残疾儿童、孤儿、事实无人抚养儿童、脱贫享受政策和防止返贫监测帮扶对象等家庭儿童、烈士子女、低保家庭儿童、特困救助供养儿童的保教费。', who: '你选择了：' + matched, note: priv ? '普惠性民办幼儿园按当地同类公办幼儿园标准减免，超出部分可以收取。' : '' });
+      if (needy) out.push({ kind: 'check', title: '学前教育政府助学金', amt: '1800 / 2200', unit: '元/年，平均2000', body: '面向区（市）认定的普惠性幼儿园里的家庭经济困难幼儿，分两档发放。', who: '需幼儿园认定为家庭经济困难幼儿' });
+    }
+    if (s.stage === 'pri' || s.stage === 'mid') {
+      out.push({ kind: 'likely', title: '免学杂费，免费提供教科书', amt: '全免', unit: '所有学生', body: '城乡义务教育学生免除学杂费，免费提供教科书和作业本。不用申请。', who: '所有义务教育学生', note: priv ? '民办学校学生的减免方式请向学校确认。' : '' });
+      if (needy) {
+        var board = s.board === 'yes', pri = s.stage === 'pri';
+        var amt = board ? (pri ? 1250 : 1500) : (pri ? 625 : 750);
+        out.push({ kind: 'check', title: '家庭经济困难学生生活补助', amt: String(amt), unit: '元/年', body: '标准：住校小学1250元、初中1500元；不住校小学625元、初中750元（每生每年）。', who: '需学校认定为家庭经济困难学生' + (matched ? '；你选择了：' + matched : '') });
+      }
+    }
+    if (s.stage === 'high') {
+      if (hasSpecial) {
+        var note = g.indexOf('tekun') > -1 ? '政策原文写的是“农村特困救助供养学生”。' : '';
+        if (priv) note += (note ? '' : '') + '民办高中按当地同类公办学校标准减免，超出部分可以收取。';
+        out.push({ kind: 'likely', title: '免除学杂费', amt: '全免', unit: priv ? '按公办标准减免' : '公办普通高中', body: '免除公办普通高中脱贫享受政策家庭学生、防止返贫监测帮扶对象等家庭学生、低保家庭学生、农村特困救助供养学生、残疾学生、孤儿、事实无人抚养儿童、烈士子女的学杂费。', who: '你选择了：' + matched, note: note });
+      }
+      if (needy) out.push({ kind: 'check', title: '普通高中国家助学金', amt: '1800 / 2800', unit: '元/年，平均2300', body: '面向普通高中家庭经济困难学生，分两档发放。', who: '需学校认定为家庭经济困难学生' });
+    }
+    if (s.stage === 'voc') {
+      out.push({ kind: 'likely', title: '免学费', amt: '全免', unit: priv ? '按公办标准减免' : '一至三年级', body: '公办中职学校一至三年级全日制在校生免除学费。', who: '所有一至三年级全日制学生', note: priv ? '民办中职按当地同类公办学校标准减免，超出部分可以收取。' : '' });
+      if (s.agri === 'yes' || needy) out.push({ kind: s.agri === 'yes' ? 'likely' : 'check', title: '中职国家助学金', amt: '2300', unit: '元/年', body: '面向一至三年级的农村涉农专业学生和非涉农专业家庭经济困难学生。', who: s.agri === 'yes' ? '你选择了涉农专业' : '需学校认定为家庭经济困难学生' });
+      out.push({ kind: 'check', title: '中职国家奖学金', amt: '6000', unit: '元/年', body: '二年级及以上品学兼优的学生可以申请，与家庭经济状况无关。', who: '二年级及以上，成绩优秀' });
+    }
+    return out;
+  }
+
+  function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  function render() {
+    var s = { stage: pick('stage'), board: pick('board'), agri: pick('agri'), own: pick('own'), groups: groups() };
+    document.getElementById('sub-board').hidden = !(s.stage === 'pri' || s.stage === 'mid');
+    document.getElementById('sub-voc').hidden = s.stage !== 'voc';
+    document.getElementById('ow-pri-label').textContent = s.stage === 'kg' ? '普惠性民办' : '民办';
+    var items = build(s);
+    var list = document.getElementById('list');
+    var html = items.map(function (it) {
+      return '<article class="card ' + it.kind + '">' +
+        '<div class="card-top"><h3>' + esc(it.title) + '</h3><div class="amount"><b>' + esc(it.amt) + '</b><small>' + esc(it.unit) + '</small></div></div>' +
+        '<span class="tag ' + it.kind + '">' + (it.kind === 'likely' ? '很可能符合' : '需学校认定或满足条件') + '</span>' +
+        '<p>' + esc(it.body) + '</p>' +
+        '<dl><dt>条件</dt><dd>' + esc(it.who) + '</dd>' + (it.note ? '<dt>注意</dt><dd>' + esc(it.note) + '</dd>' : '') + '</dl>' +
+        '</article>';
+    }).join('');
+    var needy = s.groups.length > 0;
+    if (!needy) {
+      html += '<div class="empty">如果家里最近遇到困难，比如家人重病或突发变故，可以向学校问问能否认定为家庭经济困难学生。认定后，还可能领到上面没列出的助学金或生活补助。</div>';
+    }
+    list.innerHTML = html;
+    document.getElementById('total').innerHTML = '共 <b>' + items.length + '</b> 项';
+  }
+
+  document.getElementById('q').addEventListener('change', function (e) {
+    if (e.target.name === 'g') {
+      if (e.target.value === 'kunnan' && e.target.checked) {
+        // “不属于以上”与特殊群体互斥
+        SPECIAL.forEach(function (k) { var el = document.getElementById('g-' + k); if (el) el.checked = false; });
+      } else if (e.target.checked) {
+        document.getElementById('g-kunnan').checked = false;
+      }
+    }
+    render();
+  });
+  document.getElementById('q').addEventListener('submit', function (e) { e.preventDefault(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('button.copy'), function (b) {
+    b.addEventListener('click', function () {
+      var el = document.getElementById(b.getAttribute('data-copy'));
+      var txt = el.textContent;
+      function done() { b.textContent = '已复制'; setTimeout(function () { b.textContent = '复制号码'; }, 1500); }
+      function fallback() { var r = document.createRange(); r.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = '已选中，请手动复制'; }
+      try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (err) { fallback(); }
+    });
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
