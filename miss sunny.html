@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Miss Sunny English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+
+/* Layout: one-screen chat app. Sunny header, chalkboard chat in the middle, input bar at the bottom */
+:root {
+  --bg: #f6f4ee;
+  --paper: #ffffff;
+  --ink: #1f2a2e;
+  --muted: #5d686c;
+  --line: #e2ded2;
+  --board: #23423a;
+  --board-ink: #eef3ef;
+  --chalk: #f5d76e;
+  --sunny: #f2a93b;
+  --kid: #dbe9fa;
+  --kid-ink: #13233a;
+  --kid-av: #4f8fd6;
+  --fix: #2f8f5b;
+  --display: "Fredoka", "Nunito", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --body: "Nunito", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141a19; --paper: #1d2523; --ink: #e8eeec; --muted: #a2b0ac; --line: #2e3a37;
+    --board: #1b332c; --board-ink: #e7efe9; --chalk: #f0cf5f; --sunny: #f0ae48;
+    --kid: #2a3d57; --kid-ink: #e3eefc; --kid-av: #78aef0; --fix: #5cc48a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141a19; --paper: #1d2523; --ink: #e8eeec; --muted: #a2b0ac; --line: #2e3a37;
+  --board: #1b332c; --board-ink: #e7efe9; --chalk: #f0cf5f; --sunny: #f0ae48;
+  --kid: #2a3d57; --kid-ink: #e3eefc; --kid-av: #78aef0; --fix: #5cc48a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+.app { height: 100%; max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; padding-block: 16px; }
+.top { display: flex; align-items: center; gap: 14px; }
+.sun { width: 54px; height: 54px; flex: none; }
+.top h1 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 28px; line-height: 1.1; }
+.top p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.board { flex: 1; min-height: 0; background: var(--board); color: var(--board-ink); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: inset 0 0 0 6px rgba(0,0,0,.12); }
+.topics { display: flex; flex-wrap: wrap; gap: 8px; }
+.topics button { font: inherit; font-size: 14px; font-weight: 700; color: var(--board-ink); background: transparent; border: 1.5px dashed rgba(255,255,255,.45); border-radius: 999px; padding: 4px 13px; cursor: pointer; }
+.topics button:hover { background: rgba(255,255,255,.08); }
+.chat { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-content: start; padding-right: 4px; }
+.msg { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: start; }
+.msg.kid { grid-template-columns: minmax(0, 1fr) 40px; }
+.av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-weight: 600; font-size: 15px; }
+.sunny .av { background: var(--sunny); color: #3a2506; }
+.kid .av { background: var(--kid-av); color: #08213d; grid-column: 2; grid-row: 1; }
+.bubble { background: var(--paper); color: var(--ink); border-radius: 14px; padding: 9px 13px; justify-self: start; max-width: 560px; }
+.kid .bubble { justify-self: end; background: var(--kid); color: var(--kid-ink); grid-column: 1; grid-row: 1; }
+.bubble p { margin: 0; }
+.cn { font-size: 13px; color: var(--muted); }
+.cn:empty { display: none; }
+.fix { margin-top: 6px; font-size: 13px; color: var(--fix); font-weight: 700; }
+.say { font: inherit; font-size: 12px; font-weight: 700; margin-top: 6px; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 1px 10px; cursor: pointer; }
+.ask { display: flex; gap: 8px; }
+.ask input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 10px 14px; border-radius: 12px; border: 0; background: var(--paper); color: var(--ink); }
+.ask button { font: inherit; font-weight: 700; border: 0; border-radius: 12px; padding: 8px 20px; cursor: pointer; background: var(--chalk); color: #23302b; }
+.topics button:focus-visible, .ask button:focus-visible, .ask input:focus-visible, .say:focus-visible { outline: 3px solid var(--chalk); outline-offset: 2px; }
+.note { margin: 0; text-align: center; font-size: 12px; color: var(--muted); }
+.ask .mic { flex: none; width: 46px; padding: 0; display: grid; place-items: center; background: var(--paper); color: var(--board); }
+.ask .mic svg { width: 22px; height: 22px; }
+.ask .mic.on { background: #e05a47; color: #fff; }
+.ask .mic:focus-visible { outline: 3px solid var(--chalk); outline-offset: 2px; }
+.status { margin: -4px 0 0; font-size: 13px; color: var(--chalk); min-height: 1em; }
+.status:empty { display: none; }
+@media (prefers-reduced-motion: no-preference) { .ask .mic.on { animation: pulse 1.2s ease-in-out infinite; } @keyframes pulse { 50% { transform: scale(1.08); } } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (max-width: 480px) { .top h1 { font-size: 24px; } .sun { width: 46px; height: 46px; } }
+@media (prefers-reduced-motion: no-preference) { .msg { animation: pop .22s ease both; } @keyframes pop { from { transform: translateY(6px); } to { transform: none; } } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <svg class="sun" viewBox="0 0 64 64" aria-hidden="true">
+      <g stroke="var(--sunny)" stroke-width="4" stroke-linecap="round">
+        <line x1="32" y1="3" x2="32" y2="11"/><line x1="32" y1="53" x2="32" y2="61"/>
+        <line x1="3" y1="32" x2="11" y2="32"/><line x1="53" y1="32" x2="61" y2="32"/>
+        <line x1="11.5" y1="11.5" x2="17" y2="17"/><line x1="47" y1="47" x2="52.5" y2="52.5"/>
+        <line x1="11.5" y1="52.5" x2="17" y2="47"/><line x1="47" y1="17" x2="52.5" y2="11.5"/>
+      </g>
+      <circle cx="32" cy="32" r="17" fill="var(--sunny)"/>
+      <circle cx="26" cy="30" r="2.2" fill="#3a2506"/><circle cx="38" cy="30" r="2.2" fill="#3a2506"/>
+      <path d="M25 37 Q32 43 39 37" fill="none" stroke="#3a2506" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>Miss Sunny</h1>
+      <p>Let's speak English together! 和 Sunny 老师一起说英语</p>
+    </div>
+  </header>
+
+  <main class="board">
+    <div class="topics" role="group" aria-label="Pick a topic">
+      <button type="button" data-topic="hello">Hello</button>
+      <button type="button" data-topic="family">My family</button>
+      <button type="button" data-topic="food">Food</button>
+      <button type="button" data-topic="animals">Animals</button>
+      <button type="button" data-topic="shop">Shopping game</button>
+    </div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <form class="ask" id="ask" autocomplete="off">
+      <label for="say-in" class="sr">Your sentence</label>
+      <button type="button" class="mic" id="mic" aria-label="Speak in English" title="Speak in English" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <input id="say-in" type="text" maxlength="120" placeholder="Type or tap the mic…">
+      <button type="submit">Send</button>
+    </form>
+    <p class="status" id="status" aria-live="polite"></p>
+  </main>
+  <p class="note">Demo version: Miss Sunny understands simple sentences about greetings, family, food, animals and likes.</p>
+</div>
+
+<script>
+(function () {
+  var chat = document.getElementById('chat');
+  var input = document.getElementById('say-in');
+  var canSpeak = 'speechSynthesis' in window;
+
+  function speak(text) {
+    if (!canSpeak) return;
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US'; u.rate = 0.85;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  function bubble(who, en, zh, fix) {
+    var row = document.createElement('div'); row.className = 'msg ' + who;
+    var av = document.createElement('div'); av.className = 'av'; av.textContent = who === 'sunny' ? 'MS' : 'Me';
+    var b = document.createElement('div'); b.className = 'bubble';
+    var p = document.createElement('p'); p.textContent = en; b.appendChild(p);
+    var cn = document.createElement('div'); cn.className = 'cn'; cn.textContent = zh || ''; b.appendChild(cn);
+    if (fix) { var f = document.createElement('div'); f.className = 'fix'; f.textContent = 'Better: ' + fix; b.appendChild(f); }
+    if (who === 'sunny' && canSpeak) {
+      var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'say'; btn.textContent = '▶ Listen';
+      btn.addEventListener('click', function () { speak(en); });
+      b.appendChild(btn);
+    }
+    row.appendChild(av); row.appendChild(b);
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  var TOPICS = {
+    hello: ['Hello! How are you today?', '你好！你今天好吗？'],
+    family: ["Let's talk about your family. Who is in your family?", '我们聊聊你的家人吧。你家里有谁？'],
+    food: ['I love food! What food do you like?', '我喜欢美食！你喜欢吃什么？'],
+    animals: ['Animals are fun! What animal do you like?', '动物真有趣！你喜欢什么动物？'],
+    shop: ["Let's play a game. I am a fruit shop. What do you want?", '我们玩个游戏，我是水果店。你想要什么？']
+  };
+
+  var NUM = { one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9, ten:10, eleven:11, twelve:12 };
+  var ZH = [
+    [/猫/, 'I like cats.'], [/狗/, 'I like dogs.'], [/苹果/, 'I like apples.'], [/香蕉/, 'I like bananas.'],
+    [/面条/, 'I like noodles.'], [/米饭/, 'I like rice.'], [/妈妈/, 'This is my mother.'], [/爸爸/, 'This is my father.'],
+    [/奶奶|外婆|姥姥/, 'This is my grandma.'], [/你好/, 'Hello!'], [/谢谢/, 'Thank you!']
+  ];
+  var FAMILY = ['mother','mom','father','dad','grandma','grandpa','brother','sister','family'];
+  var FOOD = ['apple','apples','banana','bananas','rice','noodles','egg','eggs','milk','cake','fish','dumplings','orange','oranges'];
+  var ANIMAL = ['cat','cats','dog','dogs','panda','pandas','rabbit','rabbits','bird','birds','tiger','tigers','monkey','monkeys'];
+  var FOLLOW = ['What food do you like?', 'Who is in your family?', 'What animal do you like?', 'How are you today?'];
+  var asked = 0;
+  function follow() { var q = FOLLOW[asked % FOLLOW.length]; asked++; return q; }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function plural(w) { return (/s$/.test(w) || ['rice','milk','fish','cake'].indexOf(w) > -1) ? w : w + 's'; }
+
+  function reply(raw) {
+    var text = raw.trim();
+    if (!text) return null;
+    if (/[一-鿿]/.test(text)) {
+      for (var i = 0; i < ZH.length; i++) if (ZH[i][0].test(text)) return { en: "Let's say it in English! Try: \"" + ZH[i][1] + '"', zh: '我们用英语说吧！试着说："' + ZH[i][1] + '"' };
+      return { en: "Let's try in English! You can start with \"I like ...\"", zh: '我们试试用英语说！可以用 "I like ..." 开头。' };
+    }
+    var t = text.toLowerCase().replace(/[!?.,]/g, ' ').replace(/\s+/g, ' ').trim();
+    var words = t.split(' ');
+    function has(list) { for (var i = 0; i < words.length; i++) if (list.indexOf(words[i]) > -1) return words[i]; return null; }
+    var m;
+
+    if ((m = t.match(/\bi am (\w+) year old\b/))) return { en: 'Oh, you are ' + m[1] + ' years old! Great!', zh: '哦，你' + (NUM[m[1]] || m[1]) + '岁了！真棒！', fix: 'I am ' + m[1] + ' years old.', next: follow() };
+    if ((m = t.match(/\bi like (eat|play|read|swim|draw|sing|cook) (\w+)/))) {
+      var ing = { eat:'eating', play:'playing', read:'reading', swim:'swimming', draw:'drawing', sing:'singing', cook:'cooking' }[m[1]];
+      var obj = FOOD.indexOf(m[2]) > -1 ? plural(m[2]) : m[2];
+      return { en: 'Oh, you like ' + ing + ' ' + obj + '! Me too!', zh: '哦，你也喜欢这个！我也是！', fix: 'I like ' + ing + ' ' + obj + '.', next: follow() };
+    }
+    if ((m = t.match(/\b(she|he|my \w+) like (\w+)/))) return { en: cap(m[1]) + ' likes ' + m[2] + '? How nice!', zh: '真好！', fix: cap(m[1]) + ' likes ' + m[2] + '.', next: 'Do you like ' + m[2] + ' too?' };
+    if ((m = t.match(/\b(two|three|four|five|six|seven|eight|nine|ten|[2-9]|1[0-2]) (apple|banana|orange|egg|cat|dog|book|pencil)\b/))) return { en: cap(m[1]) + ' ' + m[2] + 's. Here you are!', zh: '给你！', fix: cap(m[1]) + ' ' + m[2] + 's, please.', next: 'What else do you want?' };
+
+    if (/\b(hello|hi|hey)\b/.test(t)) return { en: 'Hello! Nice to meet you!', zh: '你好！很高兴认识你！', next: 'How are you today?' };
+    if (/\b(fine|good|great|ok|okay|happy)\b/.test(t) && /\b(i am|i'm|im)\b/.test(t)) return { en: "I'm happy to hear that!", zh: '听到你这么说我很开心！', next: follow() };
+    if (/\b(sad|tired|not good|bad|scared|angry)\b/.test(t)) return { en: "Oh, I'm sorry. I hope you feel better soon. You can tell your teacher or your family, too.", zh: '哦，希望你快点好起来。也可以告诉老师或家人哦。' };
+    if ((m = t.match(/\bi am (\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\b/))) return { en: 'You are ' + m[1] + ' years old! Wonderful!', zh: '你' + (NUM[m[1]] || m[1]) + '岁了！真好！', next: follow() };
+    var f = has(FOOD); if (f) return { en: cap(f) + '! Yummy! I like ' + plural(f) + ' too.', zh: '好好吃！我也喜欢。', next: 'Do you like fruit or noodles?' };
+    var a = has(ANIMAL); if (a) return { en: cap(plural(a)) + ' are so cute!', zh: '太可爱了！', next: 'Do you have a pet?' };
+    var fm = has(FAMILY); if (fm) return { en: 'Your ' + fm + ' sounds nice! Tell me more.', zh: '听起来很好！再多说一点吧。', next: 'What does your ' + fm + ' like?' };
+    if (/\b(thank|thanks)\b/.test(t)) return { en: "You're welcome!", zh: '不客气！', next: follow() };
+    if (/\b(bye|goodbye)\b/.test(t)) return { en: 'Goodbye! See you next time!', zh: '再见！下次见！' };
+    if (t === 'yes' || t === 'no') return { en: t === 'yes' ? 'Great!' : 'OK!', zh: t === 'yes' ? '太好了！' : '好的！', next: follow() };
+    if (words.length === 1) return { en: 'Good word! Can you make a sentence? Try "I like ' + t + '."', zh: '很好的单词！能说一句完整的话吗？' };
+    return { en: "Nice try! I don't know that one yet.", zh: '说得好！这句话我还不会。', next: follow() };
+  }
+
+  function send(text) {
+    var r = reply(text);
+    if (!r) return;
+    bubble('kid', text, '', r.fix || null);
+    var line = r.en + (r.next ? ' ' + r.next : '');
+    bubble('sunny', line, r.zh);
+    speak(line);
+  }
+
+  document.getElementById('ask').addEventListener('submit', function (e) { e.preventDefault(); var v = input.value; input.value = ''; send(v); input.focus(); });
+  Array.prototype.forEach.call(document.querySelectorAll('.topics button'), function (b) {
+    b.addEventListener('click', function () { var tp = TOPICS[b.getAttribute('data-topic')]; bubble('sunny', tp[0], tp[1]); speak(tp[0]); });
+  });
+
+  // ---- Voice input (browser speech recognition) ----
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var mic = document.getElementById('mic');
+  var status = document.getElementById('status');
+  if (SR) {
+    mic.hidden = false;
+    var rec = null, listening = false, heard = '';
+    function stopUI() { listening = false; mic.classList.remove('on'); mic.setAttribute('aria-label', 'Speak in English'); }
+    mic.addEventListener('click', function () {
+      if (listening && rec) { rec.stop(); return; }
+      try {
+        if (canSpeak) window.speechSynthesis.cancel();
+        rec = new SR();
+        rec.lang = 'en-US'; rec.interimResults = true; rec.maxAlternatives = 1; rec.continuous = false;
+        heard = '';
+        rec.onresult = function (e) {
+          var txt = '';
+          for (var i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript;
+          heard = txt; input.value = txt;
+        };
+        rec.onerror = function (e) {
+          stopUI();
+          status.textContent = (e.error === 'not-allowed' || e.error === 'service-not-allowed')
+            ? 'Microphone is not available here. You can type instead. 这里用不了麦克风，可以打字哦。'
+            : (e.error === 'no-speech' ? "I didn't hear you. Try again! 没听到，再说一次吧！" : 'Voice input stopped. You can type instead. 语音中断了，可以打字哦。');
+        };
+        rec.onend = function () {
+          stopUI();
+          if (heard.trim()) { status.textContent = ''; input.value = ''; send(heard.trim()); }
+        };
+        rec.start();
+        listening = true; mic.classList.add('on'); mic.setAttribute('aria-label', 'Stop listening');
+        status.textContent = 'Listening… speak in English! 请说英语…';
+      } catch (err) {
+        stopUI();
+        status.textContent = 'Voice input is not available here. You can type instead. 这里用不了语音，可以打字哦。';
+      }
+    });
+  }
+
+  bubble('sunny', "Hi! I'm Miss Sunny. Say something to me in English, or pick a topic above!", '你好！我是 Sunny 老师。用英语跟我说点什么，或者点上面的话题吧！');
+})();
+</script>
+
+</body>
+</html>
