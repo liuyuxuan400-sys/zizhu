@@ -4,297 +4,695 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Know Your Student Aid</title>
-<meta name="description" content="Qingdao student financial aid finder, a personal public-interest project">
+<meta name="description" content="Qingdao student financial aid guide and finder, a personal public-interest project">
 <style>
-html{-webkit-text-size-adjust:100%}
-body{margin:0}
-[hidden]{display:none!important}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-
-/* Layout: single column, mobile first; three questions on top, instant results below */
+/* Layout: left sidebar (brand, 4 tabs, notice) + right content pages: Overview, Aid finder, All programs, How to apply */
+html { -webkit-text-size-adjust: 100%; }
+[hidden] { display: none !important; }
 :root {
   --bg: #f3f6f7;
   --surface: #ffffff;
+  --soft: #eaf0f1;
   --ink: #17262b;
   --muted: #56676d;
   --line: #d6e0e3;
   --sea: #0d6a73;
+  --sea-dark: #0b3f45;
+  --sea-2: #11535a;
+  --side-ink: #e6f2f3;
+  --side-muted: #a9c7ca;
   --sea-soft: #e1f0f1;
   --sun: #f3c94b;
   --sun-soft: #fdf4d6;
   --warn: #9a3b1d;
-  --font: "Inter", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font: "Inter", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif;
   --num: "DIN Alternate", "Bahnschrift", "Roboto Condensed", var(--font);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f1a1c; --surface: #172427; --ink: #e6eef0; --muted: #9db0b5; --line: #2a3b3f;
-    --sea: #5cc3cb; --sea-soft: #173a3e; --sun: #e9bd3a; --sun-soft: #3a3217; --warn: #f0a585;
+    --bg: #0f1a1c; --surface: #172427; --soft: #1c2c30; --ink: #e6eef0; --muted: #9db0b5; --line: #2a3b3f;
+    --sea: #5cc3cb; --sea-dark: #0a2a2e; --sea-2: #123a3f; --sea-soft: #173a3e; --sun: #e9bd3a; --sun-soft: #3a3217; --warn: #f0a585;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f1a1c; --surface: #172427; --ink: #e6eef0; --muted: #9db0b5; --line: #2a3b3f;
-  --sea: #5cc3cb; --sea-soft: #173a3e; --sun: #e9bd3a; --sun-soft: #3a3217; --warn: #f0a585;
+  --bg: #0f1a1c; --surface: #172427; --soft: #1c2c30; --ink: #e6eef0; --muted: #9db0b5; --line: #2a3b3f;
+  --sea: #5cc3cb; --sea-dark: #0a2a2e; --sea-2: #123a3f; --sea-soft: #173a3e; --sun: #e9bd3a; --sun-soft: #3a3217; --warn: #f0a585;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body {
-  background: var(--bg); color: var(--ink); font-family: var(--font);
-  font-size: 16px; line-height: 1.65;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 0 48px;
-}
-.wrap { max-width: 640px; margin: 0 auto; }
-header.top { padding-block: 28px 18px; display: grid; gap: 6px; }
-.badge { justify-self: start; font-size: 12px; letter-spacing: .08em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
-h1 { font-size: 28px; line-height: 1.25; margin: 4px 0 0; text-wrap: balance; }
-h1 span { color: var(--sea); }
-.lead { margin: 0; color: var(--muted); }
-.step { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 12px; margin-top: 14px; }
-.step h2 { margin: 0; font-size: 17px; display: flex; gap: 10px; align-items: baseline; }
-.step h2 .n { font-family: var(--num); color: var(--sea); font-size: 15px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.6; }
+button { font: inherit; color: inherit; }
+a { color: var(--sea); }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+h1, h2, h3 { line-height: 1.25; margin: 0; }
+
+/* shell */
+.shell { display: grid; grid-template-columns: 256px minmax(0, 1fr); min-height: 100vh; background: linear-gradient(to right, var(--sea-dark) 256px, transparent 256px); }
+.side { position: sticky; top: 0; height: 100vh; overflow-y: auto; background: var(--sea-dark); color: var(--side-ink); padding: 24px 16px 20px max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 22px; }
+.brand { display: flex; gap: 10px; align-items: center; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: var(--side-ink); }
+.brand svg { width: 42px; height: 42px; flex: none; }
+.brand b { display: block; font-size: 18px; line-height: 1.2; }
+.brand small { display: block; font-size: 12px; color: var(--side-muted); }
+.nav { display: grid; gap: 4px; }
+.nav button { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 0; background: transparent; color: var(--side-ink); border-radius: 12px; padding: 10px 12px; cursor: pointer; }
+.nav button:hover { background: var(--sea-2); }
+.nav button[aria-current="page"] { background: var(--sun); color: #2a2205; }
+.nav svg { width: 22px; height: 22px; flex: none; }
+.nav b { display: block; font-size: 15px; line-height: 1.2; }
+.nav small { display: block; font-size: 12px; opacity: .8; }
+.side-foot { margin-top: auto; display: grid; gap: 10px; font-size: 12.5px; color: var(--side-muted); }
+.side-foot .pill { display: inline-block; justify-self: start; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 2px 10px; color: var(--side-ink); }
+.side-foot a { color: var(--sun); }
+.main { min-width: 0; padding: 32px max(16px, env(safe-area-inset-right, 0px)) 56px 36px; }
+.page { max-width: 1000px; margin: 0 auto; }
+.eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--sea); }
+.page-head { margin-bottom: 22px; }
+.page-head h1 { font-size: 30px; }
+.page-head p { margin: 8px 0 0; color: var(--muted); max-width: 680px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+.btn { border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 700; cursor: pointer; background: var(--sea); color: #fff; }
+:root[data-theme="dark"] .btn { color: #062226; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #062226; } }
+.btn.ghost { background: transparent; border: 1.5px solid var(--line); color: var(--ink); }
+.btn.sun { background: var(--sun); color: #2a2205; }
+.sec-title { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 28px 0 12px; }
+.sec-title h2 { font-size: 21px; }
+.sec-title span { color: var(--muted); font-size: 14px; }
 .hint { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* overview */
+.hero { background: var(--sea-dark); color: var(--side-ink); border-radius: 22px; padding: 28px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; }
+.hero h1 { font-size: 34px; }
+.hero h1 span { color: var(--sun); }
+.hero p { margin: 10px 0 18px; color: var(--side-muted); max-width: 560px; }
+.hero .row { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero .btn.ghost { color: var(--side-ink); border-color: rgba(255,255,255,.35); }
+.hero svg { width: 150px; height: 150px; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.stat b { display: block; font-family: var(--num); font-size: 30px; line-height: 1.1; color: var(--sea); font-variant-numeric: tabular-nums; }
+.stat small { color: var(--muted); font-size: 13px; }
+.stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.stage-tile { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; cursor: pointer; display: grid; gap: 4px; }
+.stage-tile:hover { border-color: var(--sea); }
+.stage-tile b { font-size: 15px; }
+.stage-tile small { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.stage-tile .go { color: var(--sea); font-size: 13px; font-weight: 700; margin-top: 4px; }
+.steps4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; counter-reset: s; }
+.steps4 .card { display: grid; gap: 6px; padding: 16px; }
+.steps4 .n { width: 28px; height: 28px; border-radius: 50%; background: var(--sea-soft); color: var(--sea); display: grid; place-items: center; font-family: var(--num); font-weight: 700; }
+.steps4 h3 { font-size: 16px; }
+.steps4 p { margin: 0; color: var(--muted); font-size: 14px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.two ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
+.alert { background: var(--sun-soft); border-color: var(--sun); }
+
+/* finder */
+.finder { display: grid; grid-template-columns: minmax(0, 400px) minmax(0, 1fr); gap: 18px; align-items: start; }
+.qcol { display: grid; gap: 12px; position: sticky; top: 16px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+.step h2 { font-size: 16px; display: flex; gap: 10px; align-items: baseline; }
+.step h2 .n { font-family: var(--num); color: var(--sea); font-size: 15px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { position: relative; }
 .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.chip span { display: inline-block; padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 15px; line-height: 1.3; }
-.chip input:checked + span { border-color: var(--sea); background: var(--sea-soft); color: var(--ink); font-weight: 600; }
+.chip span { display: inline-block; padding: 7px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 14.5px; line-height: 1.3; }
+.chip input:checked + span { border-color: var(--sea); background: var(--sea-soft); font-weight: 600; }
 .chip input:focus-visible + span { outline: 3px solid var(--sun); outline-offset: 2px; }
-.sub[hidden] { display: none; }
-.sub { display: grid; gap: 8px; padding-top: 4px; border-top: 1px dashed var(--line); }
+.sub { display: grid; gap: 8px; padding-top: 6px; border-top: 1px dashed var(--line); }
 .sub-label { font-size: 14px; color: var(--muted); }
-
-.results { margin-top: 26px; display: grid; gap: 12px; }
-.results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.results-head h2 { margin: 0; font-size: 20px; }
-.total { font-size: 14px; color: var(--muted); }
-.total b { font-family: var(--num); color: var(--sea); font-size: 18px; font-variant-numeric: tabular-nums; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 8px; }
-.card.likely { border-left: 5px solid var(--sea); }
-.card.check { border-left: 5px solid var(--sun); }
-.card-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
-.card h3 { margin: 0; font-size: 17px; line-height: 1.4; min-width: 0; }
+.rcol { display: grid; gap: 12px; }
+.summary { background: var(--sea-dark); color: var(--side-ink); border-radius: 16px; padding: 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.summary b { display: block; font-family: var(--num); font-size: 26px; line-height: 1.15; color: var(--sun); font-variant-numeric: tabular-nums; }
+.summary small { color: var(--side-muted); font-size: 13px; }
+.summary .full { grid-column: 1 / -1; font-size: 13px; color: var(--side-muted); margin: 0; }
+.prog { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 8px; }
+.prog.likely { border-left: 5px solid var(--sea); }
+.prog.check { border-left: 5px solid var(--sun); }
+.prog-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.prog h3 { font-size: 17px; line-height: 1.4; min-width: 0; }
 .amount { text-align: right; white-space: nowrap; font-family: var(--num); font-variant-numeric: tabular-nums; }
 .amount b { font-size: 22px; color: var(--sea); }
 .amount small { display: block; font-size: 12px; color: var(--muted); font-family: var(--font); }
-.tag { justify-self: start; font-size: 12px; padding: 1px 8px; border-radius: 6px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 12px; padding: 1px 8px; border-radius: 6px; background: var(--soft); color: var(--muted); }
 .tag.likely { background: var(--sea-soft); color: var(--sea); }
 .tag.check { background: var(--sun-soft); color: var(--ink); }
-.card p { margin: 0; font-size: 15px; }
-.card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
-.card dt { color: var(--muted); }
-.card dd { margin: 0; min-width: 0; }
-.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 16px 18px; color: var(--muted); }
+.prog p { margin: 0; font-size: 15px; }
+.prog dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
+.prog dt { color: var(--muted); }
+.prog dd { margin: 0; min-width: 0; }
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 14px 16px; color: var(--muted); font-size: 15px; }
+.asklist { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
-.box { margin-top: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 10px; }
-.box h2 { margin: 0; font-size: 17px; }
-.box ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
-.phone { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* programs */
+.filters { display: grid; gap: 10px; margin-bottom: 16px; }
+.frow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.frow > span { font-size: 13px; color: var(--muted); min-width: 64px; }
+.fbtn { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 14px; cursor: pointer; }
+.fbtn[aria-pressed="true"] { background: var(--sea); border-color: var(--sea); color: #fff; }
+:root[data-theme="dark"] .fbtn[aria-pressed="true"] { color: #062226; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fbtn[aria-pressed="true"] { color: #062226; } }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 620px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 13px; color: var(--muted); font-weight: 700; background: var(--soft); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-family: var(--num); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gloss { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.gloss div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.gloss b { display: block; font-size: 15px; }
+.gloss span { color: var(--muted); font-size: 14px; }
+
+/* apply */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.timeline li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 18px; }
+.timeline li::before { content: ""; position: absolute; left: 19px; top: 36px; bottom: 0; width: 2px; background: var(--line); }
+.timeline li:last-child::before { display: none; }
+.timeline .dot { width: 40px; height: 40px; border-radius: 50%; background: var(--sea); color: #fff; display: grid; place-items: center; font-family: var(--num); font-weight: 700; }
+:root[data-theme="dark"] .timeline .dot { color: #062226; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .timeline .dot { color: #062226; } }
+.timeline h3 { font-size: 16px; padding-top: 8px; }
+.timeline p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.checklist label { display: flex; gap: 10px; align-items: start; cursor: pointer; font-size: 15px; }
+.checklist input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--sea); flex: none; }
+.checklist small { display: block; color: var(--muted); font-size: 13px; }
+.progress { height: 8px; border-radius: 4px; background: var(--soft); overflow: hidden; margin: 10px 0 4px; }
+.progress i { display: block; height: 100%; background: var(--sea); width: 0; transition: width .2s; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+details + details { margin-top: 8px; }
+summary { cursor: pointer; font-weight: 700; }
+details p { margin: 8px 0 2px; color: var(--muted); font-size: 15px; }
+.phone { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
 .phone code { font-family: var(--num); font-size: 18px; font-variant-numeric: tabular-nums; background: var(--sea-soft); padding: 2px 10px; border-radius: 8px; user-select: all; }
-button.copy { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
-button.copy:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
-.alert { background: var(--sun-soft); border: 1px solid var(--sun); }
-footer { margin-top: 26px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
-footer a, .box a { color: var(--sea); }
-@media (prefers-reduced-motion: no-preference) { .card { animation: in .25s ease both; } @keyframes in { from { transform: translateY(4px); } to { transform: none; } } }
-@media (max-width: 420px) { h1 { font-size: 24px; } .card-top { flex-direction: column; } .amount { text-align: left; } }
+button.copy { font-size: 13px; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+.sources { font-size: 13px; color: var(--muted); display: grid; gap: 6px; margin-top: 26px; }
+.sources p { margin: 0; }
+
+@media (max-width: 960px) {
+  .finder, .two, .grid2, .gloss { grid-template-columns: minmax(0, 1fr); }
+  .qcol { position: static; }
+  .stages { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .steps4, .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .shell { grid-template-columns: minmax(0, 1fr); background: none; }
+  .side { position: static; height: auto; padding: 14px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); gap: 12px; }
+  .nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .nav button { flex-direction: column; gap: 2px; padding: 8px 4px; text-align: center; }
+  .nav small, .side-foot { display: none; }
+  .nav b { font-size: 12.5px; }
+  .main { padding: 20px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
+  .hero { grid-template-columns: minmax(0, 1fr); padding: 20px; }
+  .hero svg { display: none; }
+  .hero h1, .page-head h1 { font-size: 26px; }
+  .stages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .summary { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .prog-top { flex-direction: column; }
+  .amount { text-align: left; }
+}
+@media print {
+  .side, .qcol, .actions, .noprint { display: none !important; }
+  .shell { display: block; background: none; }
+  .finder { display: block; }
+  body { background: #fff; }
+}
 </style>
 </head>
 <body>
-
-<div class="wrap">
-  <header class="top">
-    <span class="badge">Personal public-interest project · Not an official government website</span>
-    <h1>What <span>student aid</span> can your family get?</h1>
-    <p class="lead">Answer three questions to see which of Qingdao's student aid programs your family may qualify for. No name needed, and no personal information is collected.</p>
-  </header>
-
-  <form id="q" autocomplete="off">
-    <section class="step">
-      <h2><span class="n">1</span>What grade is your child in?</h2>
-      <div class="chips" role="radiogroup" aria-label="School stage">
-        <label class="chip"><input type="radio" name="stage" id="st-kg" value="kg"><span>Kindergarten</span></label>
-        <label class="chip"><input type="radio" name="stage" id="st-pri" value="pri" checked><span>Primary school</span></label>
-        <label class="chip"><input type="radio" name="stage" id="st-mid" value="mid"><span>Junior high</span></label>
-        <label class="chip"><input type="radio" name="stage" id="st-high" value="high"><span>Senior high</span></label>
-        <label class="chip"><input type="radio" name="stage" id="st-voc" value="voc"><span>Vocational school</span></label>
-      </div>
-      <div class="sub" id="sub-board">
-        <span class="sub-label">Does your child board at school?</span>
-        <div class="chips">
-          <label class="chip"><input type="radio" name="board" id="bd-no" value="no" checked><span>No, lives at home</span></label>
-          <label class="chip"><input type="radio" name="board" id="bd-yes" value="yes"><span>Yes, boards</span></label>
-        </div>
-      </div>
-      <div class="sub" id="sub-voc" hidden>
-        <span class="sub-label">Is your child in an agriculture-related major?</span>
-        <div class="chips">
-          <label class="chip"><input type="radio" name="agri" id="ag-no" value="no" checked><span>No</span></label>
-          <label class="chip"><input type="radio" name="agri" id="ag-yes" value="yes"><span>Yes, agriculture-related</span></label>
-        </div>
-      </div>
-    </section>
-
-    <section class="step">
-      <h2><span class="n">2</span>Do any of these apply to your family or child?</h2>
-      <p class="hint">Choose all that apply. If you are not sure, leave it blank; the results will point out programs to ask the school about.</p>
-      <div class="chips" id="groups">
-        <label class="chip"><input type="checkbox" name="g" id="g-dibao" value="dibao"><span>Minimum living allowance (dibao) household</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-tekun" value="tekun"><span>Extreme-poverty support recipient</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-tuopin" value="tuopin"><span>Household lifted out of poverty, still receiving support</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-jiance" value="jiance"><span>Monitored for risk of falling back into poverty</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-guer" value="guer"><span>Orphan</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-wuren" value="wuren"><span>Child without de facto caregivers</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-canji" value="canji"><span>Child has a disability</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-lieshi" value="lieshi"><span>Child of a martyr</span></label>
-        <label class="chip"><input type="checkbox" name="g" id="g-kunnan" value="kunnan"><span>None of the above, but the family has financial hardship</span></label>
-      </div>
-    </section>
-
-    <section class="step">
-      <h2><span class="n">3</span>What type of school does your child attend?</h2>
-      <div class="chips">
-        <label class="chip"><input type="radio" name="own" id="ow-pub" value="pub" checked><span>Public</span></label>
-        <label class="chip"><input type="radio" name="own" id="ow-pri" value="pri"><span id="ow-pri-label">Private</span></label>
-      </div>
-      <p class="hint" id="own-hint">At private schools, waivers usually cover only the amount a local public school would charge. Families pay any difference.</p>
-    </section>
-  </form>
-
-  <section class="results" aria-live="polite">
-    <div class="results-head">
-      <h2 id="res-title">Aid you may qualify for</h2>
-      <span class="total" id="total"></span>
+<div class="shell">
+  <aside class="side">
+    <button class="brand" type="button" data-go="overview" aria-label="Know Your Student Aid, go to overview">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="#f3c94b"/><path d="M10 21 24 13l14 8-14 8z" fill="#0b3f45"/><path d="M16 25v7c0 2 4 4 8 4s8-2 8-4v-7" fill="none" stroke="#0b3f45" stroke-width="2.6" stroke-linecap="round"/><path d="M38 21v9" stroke="#0b3f45" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <span><b>Know Your Student Aid</b><small>Qingdao · 2026 policies</small></span>
+    </button>
+    <nav class="nav" aria-label="Main">
+      <button type="button" data-page="overview" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        <span><b>Overview</b><small>What this site does</small></span>
+      </button>
+      <button type="button" data-page="finder">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15 15 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span><b>Aid finder</b><small>3 questions, instant results</small></span>
+      </button>
+      <button type="button" data-page="programs">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="4" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="13" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="7" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <span><b>All programs</b><small>Browse and compare</small></span>
+      </button>
+      <button type="button" data-page="apply">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16H7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m9.5 10 1.8 1.8L15 8M9.5 15.5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        <span><b>How to apply</b><small>Steps, checklist, FAQ</small></span>
+      </button>
+    </nav>
+    <div class="side-foot">
+      <span class="pill">Not an official government site</span>
+      <p style="margin:0">A personal public-interest project. It explains policies but does not file applications. No personal information is collected.</p>
+      <p style="margin:0"><a href="./">中文版</a> · Updated Nov 27, 2026</p>
     </div>
-    <div id="list"></div>
-  </section>
+  </aside>
 
-  <section class="box">
-    <h2>How to apply</h2>
-    <ul>
-      <li>Except for a few programs such as student-origin credit loans, all student aid is <b>applied for at your child's school or kindergarten after the term starts</b>.</li>
-      <li>Prepare documents that show your family's situation in advance (such as a dibao certificate or disability certificate). Follow your school's notice for exactly what to submit.</li>
-      <li>Programs marked "Needs school approval" require the school to first confirm the student as being from a family with financial hardship. Aid is then paid by tier.</li>
-    </ul>
-  </section>
+  <main class="main">
+    <!-- OVERVIEW -->
+    <section class="page" id="page-overview">
+      <div class="hero">
+        <div>
+          <p class="eyebrow" style="color:var(--sun)">Qingdao student aid, explained simply</p>
+          <h1>Find the <span>student aid</span> your family may qualify for</h1>
+          <p>Qingdao offers fee waivers, grants and living allowances from kindergarten to senior high and vocational school. Many families who qualify never apply because the rules are hard to read. This site turns them into three simple questions.</p>
+          <div class="row">
+            <button class="btn sun" type="button" data-go="finder">Start the aid finder</button>
+            <button class="btn ghost" type="button" data-go="programs">Browse all programs</button>
+          </div>
+        </div>
+        <svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="70" fill="#11535a"/><rect x="42" y="52" width="76" height="62" rx="10" fill="#e6f2f3"/><rect x="52" y="64" width="40" height="7" rx="3.5" fill="#0b3f45"/><rect x="52" y="78" width="56" height="6" rx="3" fill="#a9c7ca"/><rect x="52" y="90" width="48" height="6" rx="3" fill="#a9c7ca"/><circle cx="112" cy="108" r="20" fill="#f3c94b"/><path d="m103 108 6 6 12-13" fill="none" stroke="#0b3f45" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="stats" id="stats"></div>
 
-  <section class="box">
-    <h2>Questions? Call the hotline</h2>
-    <p class="hint">Qingdao Municipal Education Bureau summer student aid hotline. In 2026 it was staffed on weekdays from July 1 to September 15 (9:00–11:30 and 13:30–17:00), and that period has ended. At other times, ask your child's school first.</p>
-    <div class="phone"><code id="p1">0532-82734236</code><button class="copy" type="button" data-copy="p1">Copy number</button></div>
-    <div class="phone"><code id="p2">0532-81703683</code><button class="copy" type="button" data-copy="p2">Copy number</button></div>
-    <p class="hint">Each district also has its own aid hotline. Ask your child's school for the number.</p>
-  </section>
+      <div class="sec-title"><h2>Start with your child's school stage</h2><span>Opens the finder with that stage selected</span></div>
+      <div class="stages" id="stage-tiles"></div>
 
-  <section class="box alert">
-    <h2>Beware of scams</h2>
-    <p class="hint" style="color:var(--ink)">You apply for aid through your school. If a call or text claims to be from an aid office and asks you to transfer money or share a bank card password, hang up, then call the school or the hotline above to check.</p>
-  </section>
+      <div class="sec-title"><h2>How it works</h2></div>
+      <div class="steps4">
+        <div class="card"><span class="n">1</span><h3>Answer 3 questions</h3><p>School stage, family situation, and school type. No name or ID needed.</p></div>
+        <div class="card"><span class="n">2</span><h3>See matching programs</h3><p>Each result shows the amount, who qualifies, and whether school approval is needed.</p></div>
+        <div class="card"><span class="n">3</span><h3>Prepare your documents</h3><p>Use the checklist to gather papers that show your family's situation.</p></div>
+        <div class="card"><span class="n">4</span><h3>Apply at school</h3><p>Most aid is applied for at your child's school after the term starts.</p></div>
+      </div>
 
-  <footer>
-    <p>This page is a personal public-interest project, not an official website of any government or school. It explains the policies but does not file applications. The latest notices from schools and education authorities always take precedence.</p>
-    <p>Policy source: Qingdao Municipal Education Bureau, 2026 student aid policies, as reported by <a href="https://news.qingdaonews.com/wap/2026-06/28/content_23742655.htm" target="_blank" rel="noopener">Qingdao News (June 28, 2026, in Chinese)</a> and <a href="https://finance.sina.com.cn/roll/2026-06-28/doc-iniexpvw4040948.shtml" target="_blank" rel="noopener">Sina Finance (in Chinese)</a>.</p>
-    <p>Last updated: November 26, 2026 · <a href="./">中文版</a></p>
-  </footer>
+      <div class="sec-title"><h2>Good to know</h2></div>
+      <div class="two">
+        <div class="card">
+          <h3>Who this site is for</h3>
+          <ul>
+            <li>Families in Qingdao with children in kindergarten, primary, junior high, senior high or vocational school.</li>
+            <li>Families on the minimum living allowance (dibao), receiving extreme-poverty support, or recently lifted out of poverty.</li>
+            <li>Families of orphans, children with disabilities, children without de facto caregivers, and children of martyrs.</li>
+            <li>Any family facing financial hardship, such as a serious illness or a sudden crisis.</li>
+          </ul>
+        </div>
+        <div class="card alert">
+          <h3>Beware of scams</h3>
+          <p class="hint" style="color:var(--ink);margin-top:8px">You apply for aid through your school. If a call or text claims to be from an aid office and asks you to transfer money or share a bank card password, hang up, then call the school or the hotline to check. Applying for aid never costs money.</p>
+          <p style="margin:12px 0 0"><button class="btn ghost" type="button" data-go="apply">See hotlines and FAQ</button></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINDER -->
+    <section class="page" id="page-finder" hidden>
+      <div class="page-head">
+        <p class="eyebrow">Aid finder</p>
+        <h1>What aid can your family get?</h1>
+        <p>Answer three questions on the left. Results update instantly on the right. Nothing you choose leaves this page.</p>
+      </div>
+      <div class="finder">
+        <form class="qcol" id="q" autocomplete="off">
+          <section class="step">
+            <h2><span class="n">1</span>What grade is your child in?</h2>
+            <div class="chips" role="radiogroup" aria-label="School stage">
+              <label class="chip"><input type="radio" name="stage" value="kg"><span>Kindergarten</span></label>
+              <label class="chip"><input type="radio" name="stage" value="pri" checked><span>Primary school</span></label>
+              <label class="chip"><input type="radio" name="stage" value="mid"><span>Junior high</span></label>
+              <label class="chip"><input type="radio" name="stage" value="high"><span>Senior high</span></label>
+              <label class="chip"><input type="radio" name="stage" value="voc"><span>Vocational school</span></label>
+            </div>
+            <div class="sub" id="sub-board">
+              <span class="sub-label">Does your child board at school?</span>
+              <div class="chips">
+                <label class="chip"><input type="radio" name="board" value="no" checked><span>No, lives at home</span></label>
+                <label class="chip"><input type="radio" name="board" value="yes"><span>Yes, boards</span></label>
+              </div>
+            </div>
+            <div class="sub" id="sub-voc" hidden>
+              <span class="sub-label">Is your child in an agriculture-related major?</span>
+              <div class="chips">
+                <label class="chip"><input type="radio" name="agri" value="no" checked><span>No</span></label>
+                <label class="chip"><input type="radio" name="agri" value="yes"><span>Yes, agriculture-related</span></label>
+              </div>
+            </div>
+          </section>
+          <section class="step">
+            <h2><span class="n">2</span>Do any of these apply?</h2>
+            <p class="hint">Choose all that apply. Not sure? Leave it blank.</p>
+            <div class="chips" id="groups">
+              <label class="chip"><input type="checkbox" name="g" id="g-dibao" value="dibao"><span>Dibao household</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-tekun" value="tekun"><span>Extreme-poverty support</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-tuopin" value="tuopin"><span>Lifted out of poverty, still supported</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-jiance" value="jiance"><span>Monitored for poverty risk</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-guer" value="guer"><span>Orphan</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-wuren" value="wuren"><span>No de facto caregivers</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-canji" value="canji"><span>Child has a disability</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-lieshi" value="lieshi"><span>Child of a martyr</span></label>
+              <label class="chip"><input type="checkbox" name="g" id="g-kunnan" value="kunnan"><span>None of these, but we face financial hardship</span></label>
+            </div>
+            <p class="hint">Unsure what a term means? See the glossary under <a href="#programs" data-go="programs">All programs</a>.</p>
+          </section>
+          <section class="step">
+            <h2><span class="n">3</span>What type of school?</h2>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="own" value="pub" checked><span>Public</span></label>
+              <label class="chip"><input type="radio" name="own" value="pri"><span id="ow-pri-label">Private</span></label>
+            </div>
+            <p class="hint">At private schools, waivers usually cover only the amount a local public school would charge.</p>
+          </section>
+        </form>
+
+        <div class="rcol" aria-live="polite">
+          <div class="summary" id="summary"></div>
+          <div id="list" style="display:grid;gap:12px"></div>
+          <div class="card">
+            <h3 style="font-size:17px">Questions to ask your child's school</h3>
+            <p class="hint" style="margin:4px 0 10px">Bring these to the class teacher or the school's student aid office.</p>
+            <ol class="asklist" id="asklist"></ol>
+          </div>
+          <div class="actions noprint">
+            <button class="btn" type="button" id="print">Print or save my results</button>
+            <button class="btn ghost" type="button" id="copy-sum">Copy a text summary</button>
+            <button class="btn ghost" type="button" data-go="apply">Next: how to apply →</button>
+          </div>
+          <p class="hint" id="copy-msg" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRAMS -->
+    <section class="page" id="page-programs" hidden>
+      <div class="page-head">
+        <p class="eyebrow">All programs</p>
+        <h1>Every aid program, in one place</h1>
+        <p>Filter by school stage or type of aid. Amounts are per student per year, from Qingdao's 2026 student aid policies.</p>
+      </div>
+      <div class="filters">
+        <div class="frow" id="f-stage"><span>Stage</span></div>
+        <div class="frow" id="f-type"><span>Type</span></div>
+      </div>
+      <div class="grid2" id="prog-grid"></div>
+      <p class="hint" id="prog-count" style="margin-top:10px"></p>
+
+      <div class="sec-title"><h2>At a glance: aid by school stage</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Stage</th><th>Fee waivers</th><th>Grants and allowances</th><th>Cash per year</th></tr></thead>
+          <tbody id="glance"></tbody>
+        </table>
+      </div>
+
+      <div class="sec-title"><h2>Glossary</h2><span>Terms used in the policies</span></div>
+      <div class="gloss">
+        <div><b>Dibao household</b><span>A family receiving the government's minimum living allowance (最低生活保障).</span></div>
+        <div><b>Extreme-poverty support</b><span>Government support for people with no ability to work, no income and no one obliged to support them (特困供养).</span></div>
+        <div><b>Lifted out of poverty, still supported</b><span>A household that has left poverty but is still covered by support policies (脱贫享受政策家庭).</span></div>
+        <div><b>Monitored for poverty risk</b><span>A household the government monitors because it is at risk of falling back into poverty (防返贫监测对象).</span></div>
+        <div><b>Child without de facto caregivers</b><span>A child whose parents cannot actually raise them, for example because of death, disappearance, serious illness or imprisonment (事实无人抚养儿童).</span></div>
+        <div><b>Financial hardship recognition</b><span>The school's process for confirming a student comes from a family with financial difficulty (家庭经济困难学生认定). Many grants require it.</span></div>
+        <div><b>Inclusive kindergarten</b><span>A public kindergarten, or a private one approved to charge regulated, affordable fees (普惠性幼儿园).</span></div>
+        <div><b>Tier</b><span>Grants paid at two levels. The school decides the tier based on how much difficulty the family faces.</span></div>
+      </div>
+    </section>
+
+    <!-- APPLY -->
+    <section class="page" id="page-apply" hidden>
+      <div class="page-head">
+        <p class="eyebrow">How to apply</p>
+        <h1>From finding aid to getting it</h1>
+        <p>Except for a few programs such as student-origin credit loans, all student aid is applied for at your child's school or kindergarten after the term starts. Always follow your school's notice.</p>
+      </div>
+      <div class="two">
+        <div class="card">
+          <h3 style="margin-bottom:14px">The four steps</h3>
+          <ol class="timeline">
+            <li><span class="dot">1</span><div><h3>Check what you may get</h3><p>Use the aid finder. Note which programs say "Needs school approval".</p></div></li>
+            <li><span class="dot">2</span><div><h3>Prepare documents early</h3><p>Gather papers that show your family's situation, such as a dibao certificate or disability certificate.</p></div></li>
+            <li><span class="dot">3</span><div><h3>Apply at school after term starts</h3><p>Watch for the school's aid notice. Submit what it asks for, by its deadline.</p></div></li>
+            <li><span class="dot">4</span><div><h3>School confirms and pays by tier</h3><p>For grants that need approval, the school first confirms financial hardship, then pays at the tier it decides.</p></div></li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Document checklist</h3>
+          <p class="hint" style="margin-top:4px">Examples only. Bring what applies to you, and follow your school's notice for the exact list. Your ticks are saved only in this browser.</p>
+          <div class="progress" aria-hidden="true"><i id="chk-bar"></i></div>
+          <p class="hint" id="chk-count"></p>
+          <ul class="checklist" id="checklist" style="margin-top:10px"></ul>
+        </div>
+      </div>
+
+      <div class="sec-title"><h2>Frequently asked questions</h2></div>
+      <div id="faq"></div>
+
+      <div class="sec-title"><h2>Get help</h2></div>
+      <div class="two">
+        <div class="card">
+          <h3>Student aid hotline</h3>
+          <p class="hint" style="margin-top:6px">Qingdao Municipal Education Bureau summer hotline. In 2026 it was staffed on weekdays from July 1 to September 15 (9:00–11:30 and 13:30–17:00), and that period has ended. At other times, ask your child's school first.</p>
+          <div class="phone"><code id="p1">0532-82734236</code><button class="copy" type="button" data-copy="p1">Copy number</button></div>
+          <div class="phone"><code id="p2">0532-81703683</code><button class="copy" type="button" data-copy="p2">Copy number</button></div>
+          <p class="hint" style="margin-top:10px">Each district also has its own aid hotline. Ask your child's school for the number.</p>
+        </div>
+        <div class="card alert">
+          <h3>Beware of scams</h3>
+          <p class="hint" style="color:var(--ink);margin-top:6px">Applying for aid never costs money and never needs your bank card password. If anyone asks you to transfer money, hang up and check with the school or the hotline.</p>
+        </div>
+      </div>
+
+      <div class="sources">
+        <p>This page is a personal public-interest project, not an official website of any government or school. The latest notices from schools and education authorities always take precedence.</p>
+        <p>Policy source: Qingdao Municipal Education Bureau, 2026 student aid policies, as reported by <a href="https://news.qingdaonews.com/wap/2026-06/28/content_23742655.htm" target="_blank" rel="noopener">Qingdao News (June 28, 2026, in Chinese)</a> and <a href="https://finance.sina.com.cn/roll/2026-06-28/doc-iniexpvw4040948.shtml" target="_blank" rel="noopener">Sina Finance (in Chinese)</a>.</p>
+        <p>Last updated: November 27, 2026 · <a href="./">中文版</a></p>
+      </div>
+    </section>
+  </main>
 </div>
 
 <script>
 (function () {
-  // Source: Qingdao Municipal Education Bureau 2026 student aid policies (Qingdao News, 2026-06-28)
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  // ---- program data. Source: Qingdao Municipal Education Bureau 2026 student aid policies (Qingdao News, 2026-06-28)
+  var STAGE_NAMES = { kg: 'Kindergarten', pri: 'Primary', mid: 'Junior high', high: 'Senior high', voc: 'Vocational' };
+  var TYPE_NAMES = { waiver: 'Fee waiver', grant: 'Grant', allowance: 'Living allowance', scholarship: 'Scholarship' };
+  var PROGRAMS = [
+    { id: 'kg-waiver', stages: ['kg'], type: 'waiver', title: 'Childcare fee waiver', amt: 'Free', unit: 'Public kindergartens', body: 'Public kindergartens waive childcare fees for children with disabilities, orphans, children without de facto caregivers, children from households lifted out of poverty or monitored for poverty risk, children of martyrs, children from dibao households, and children receiving extreme-poverty support.', who: 'Children in the groups listed', how: 'Apply at the kindergarten. Inclusive private kindergartens waive fees up to the local public rate.' },
+    { id: 'kg-grant', stages: ['kg'], type: 'grant', title: 'Preschool government grant', amt: '1800 / 2200', unit: 'yuan/year, average 2000', min: 1800, max: 2200, body: 'For children from families with financial hardship at district-approved inclusive kindergartens. Paid in two tiers.', who: 'Families with financial hardship', how: 'The kindergarten must confirm the family\'s financial hardship.' },
+    { id: 'cmp-free', stages: ['pri', 'mid'], type: 'waiver', title: 'Free tuition and textbooks', amt: 'Free', unit: 'All students', body: 'All urban and rural students in compulsory education pay no tuition or miscellaneous fees and get free textbooks and workbooks.', who: 'All primary and junior high students', how: 'No application needed.' },
+    { id: 'cmp-allow', stages: ['pri', 'mid'], type: 'allowance', title: 'Living allowance for students with financial hardship', amt: '625 – 1500', unit: 'yuan/year, by stage and boarding', body: 'Per student per year: boarding primary 1250 yuan, boarding junior high 1500 yuan; non-boarding primary 625 yuan, non-boarding junior high 750 yuan.', who: 'Students from families with financial hardship', how: 'The school must confirm the family\'s financial hardship.' },
+    { id: 'high-waiver', stages: ['high'], type: 'waiver', title: 'Senior high tuition and fee waiver', amt: 'Free', unit: 'Public senior high', body: 'Public senior high schools waive tuition and fees for students from households lifted out of poverty or monitored for poverty risk, dibao households, rural students receiving extreme-poverty support, students with disabilities, orphans, children without de facto caregivers, and children of martyrs.', who: 'Students in the groups listed', how: 'Apply at school. Private high schools waive fees up to the local public rate.' },
+    { id: 'high-grant', stages: ['high'], type: 'grant', title: 'National grant for senior high students', amt: '1800 / 2800', unit: 'yuan/year, average 2300', min: 1800, max: 2800, body: 'For senior high students from families with financial hardship. Paid in two tiers.', who: 'Families with financial hardship', how: 'The school must confirm the family\'s financial hardship.' },
+    { id: 'voc-waiver', stages: ['voc'], type: 'waiver', title: 'Vocational school tuition waiver', amt: 'Free', unit: 'Years 1 to 3', body: 'Public vocational schools waive tuition for all full-time students in years 1 to 3.', who: 'All full-time students in years 1 to 3', how: 'Private vocational schools waive tuition up to the local public rate.' },
+    { id: 'voc-grant', stages: ['voc'], type: 'grant', title: 'National grant for vocational students', amt: '2300', unit: 'yuan/year', min: 2300, max: 2300, body: 'For years 1 to 3: rural students in agriculture-related majors, and students in other majors from families with financial hardship.', who: 'Agriculture-related majors (rural), or families with financial hardship', how: 'Apply at school; hardship cases need school confirmation.' },
+    { id: 'voc-schol', stages: ['voc'], type: 'scholarship', title: 'National scholarship for vocational students', amt: '6000', unit: 'yuan/year', body: 'Students in year 2 or above with excellent grades and conduct can apply, regardless of family income.', who: 'Year 2 or above, outstanding performance', how: 'Selected by the school based on performance.' }
+  ];
+
+  // ---- navigation
+  var PAGES = ['overview', 'finder', 'programs', 'apply'];
+  function go(p, noScroll) {
+    if (PAGES.indexOf(p) < 0) p = 'overview';
+    PAGES.forEach(function (x) { $('page-' + x).hidden = x !== p; });
+    document.querySelectorAll('.nav button').forEach(function (b) { if (b.getAttribute('data-page') === p) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    try { if (location.hash.slice(1) !== p) history.replaceState(null, '', '#' + p); } catch (e) {}
+    if (!noScroll) window.scrollTo(0, 0);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-page],[data-go],[data-stage-go]');
+    if (!b) return;
+    if (b.tagName === 'A') e.preventDefault();
+    if (b.hasAttribute('data-stage-go')) { var r = document.querySelector('input[name="stage"][value="' + b.getAttribute('data-stage-go') + '"]'); if (r) { r.checked = true; render(); } go('finder'); return; }
+    go(b.getAttribute('data-page') || b.getAttribute('data-go'));
+  });
+  window.addEventListener('hashchange', function () { go(location.hash.slice(1), true); });
+
+  // ---- overview
+  (function () {
+    var maxGrant = Math.max.apply(null, PROGRAMS.filter(function (p) { return p.max; }).map(function (p) { return p.max; }));
+    var st = [[PROGRAMS.length, 'aid programs explained'], [5, 'school stages covered'], [maxGrant.toLocaleString('en-US'), 'yuan/year, largest need-based grant'], [3, 'questions to find your aid']];
+    st.forEach(function (x) { var c = el('div', 'card stat'); c.appendChild(el('b', '', String(x[0]))); c.appendChild(el('small', '', x[1])); $('stats').appendChild(c); });
+    var tiles = [['kg', 'Kindergarten', 'Fee waivers and a preschool grant'], ['pri', 'Primary school', 'Free tuition, books and living allowance'], ['mid', 'Junior high', 'Free tuition, books and living allowance'], ['high', 'Senior high', 'Fee waivers and a national grant'], ['voc', 'Vocational school', 'Free tuition, grants and a scholarship']];
+    tiles.forEach(function (t) {
+      var b = el('button', 'stage-tile'); b.type = 'button'; b.setAttribute('data-stage-go', t[0]);
+      b.appendChild(el('b', '', t[1])); b.appendChild(el('small', '', t[2]));
+      var n = PROGRAMS.filter(function (p) { return p.stages.indexOf(t[0]) > -1; }).length;
+      b.appendChild(el('span', 'go', n + ' programs →'));
+      $('stage-tiles').appendChild(b);
+    });
+  })();
+
+  // ---- finder
   var SPECIAL = ['dibao', 'tekun', 'tuopin', 'jiance', 'guer', 'wuren', 'canji', 'lieshi'];
   var NAMES = { dibao: 'dibao household', tekun: 'extreme-poverty support recipient', tuopin: 'household lifted out of poverty', jiance: 'monitored for poverty risk', guer: 'orphan', wuren: 'child without de facto caregivers', canji: 'disability', lieshi: 'child of a martyr' };
-
-  function pick(name) { var el = document.querySelector('input[name="' + name + '"]:checked'); return el ? el.value : null; }
+  var DOCS = { dibao: 'Dibao certificate', tekun: 'Extreme-poverty support certificate', tuopin: 'Proof of poverty-alleviation support status', jiance: 'Proof of poverty-risk monitoring status', guer: 'Proof of orphan status', wuren: 'Proof of status as a child without de facto caregivers', canji: 'Disability certificate', lieshi: 'Proof of martyr\'s family status' };
+  function pick(name) { var e = document.querySelector('input[name="' + name + '"]:checked'); return e ? e.value : null; }
   function groups() { return Array.prototype.map.call(document.querySelectorAll('input[name="g"]:checked'), function (e) { return e.value; }); }
 
   function build(s) {
     var g = s.groups, hasSpecial = g.some(function (x) { return SPECIAL.indexOf(x) > -1; });
-    var needy = hasSpecial || g.indexOf('kunnan') > -1;
-    var priv = s.own === 'pri';
-    var out = [];
+    var needy = hasSpecial || g.indexOf('kunnan') > -1, priv = s.own === 'pri', out = [];
     var matched = g.filter(function (x) { return SPECIAL.indexOf(x) > -1; }).map(function (x) { return NAMES[x]; }).join(', ');
-
     if (s.stage === 'kg') {
-      if (hasSpecial) out.push({ kind: 'likely', title: 'Childcare fee waiver', amt: 'Free', unit: priv ? 'Up to public-school rate' : 'Public kindergartens', body: 'Public kindergartens waive childcare fees for children with disabilities, orphans, children without de facto caregivers, children from households lifted out of poverty or monitored for poverty risk, children of martyrs, children from dibao households, and children receiving extreme-poverty support.', who: 'You selected: ' + matched, note: priv ? 'Inclusive private kindergartens waive fees up to the local public kindergarten rate and may charge the difference.' : '' });
-      if (needy) out.push({ kind: 'check', title: 'Preschool government grant', amt: '1800 / 2200', unit: 'yuan/year, average 2000', body: 'For children from families with financial hardship at district-approved inclusive kindergartens. Paid in two tiers.', who: 'The kindergarten must confirm the family\'s financial hardship' });
+      if (hasSpecial) out.push({ kind: 'likely', type: 'waiver', title: 'Childcare fee waiver', amt: 'Free', unit: priv ? 'Up to public-school rate' : 'Public kindergartens', body: PROGRAMS[0].body, who: 'You selected: ' + matched, note: priv ? 'Inclusive private kindergartens waive fees up to the local public kindergarten rate and may charge the difference.' : '' });
+      if (needy) out.push({ kind: 'check', type: 'grant', title: 'Preschool government grant', amt: '1800 / 2200', unit: 'yuan/year, average 2000', min: 1800, max: 2200, body: PROGRAMS[1].body, who: 'The kindergarten must confirm the family\'s financial hardship' });
     }
     if (s.stage === 'pri' || s.stage === 'mid') {
-      out.push({ kind: 'likely', title: 'Free tuition and textbooks', amt: 'Free', unit: 'All students', body: 'All urban and rural students in compulsory education pay no tuition or miscellaneous fees and get free textbooks and workbooks. No application needed.', who: 'All primary and junior high students', note: priv ? 'At private schools, check with the school how the waiver applies.' : '' });
+      out.push({ kind: 'likely', type: 'waiver', title: 'Free tuition and textbooks', amt: 'Free', unit: 'All students', body: PROGRAMS[2].body + ' No application needed.', who: 'All primary and junior high students', note: priv ? 'At private schools, check with the school how the waiver applies.' : '' });
       if (needy) {
-        var board = s.board === 'yes', pri = s.stage === 'pri';
-        var amt = board ? (pri ? 1250 : 1500) : (pri ? 625 : 750);
-        out.push({ kind: 'check', title: 'Living allowance for students with financial hardship', amt: String(amt), unit: 'yuan/year', body: 'Per student per year: boarding primary 1250 yuan, boarding junior high 1500 yuan; non-boarding primary 625 yuan, non-boarding junior high 750 yuan.', who: 'The school must confirm the family\'s financial hardship' + (matched ? '. You selected: ' + matched : '') });
+        var board = s.board === 'yes', p = s.stage === 'pri';
+        var amt = board ? (p ? 1250 : 1500) : (p ? 625 : 750);
+        out.push({ kind: 'check', type: 'allowance', title: 'Living allowance for students with financial hardship', amt: String(amt), unit: 'yuan/year', min: amt, max: amt, body: PROGRAMS[3].body, who: 'The school must confirm the family\'s financial hardship' + (matched ? '. You selected: ' + matched : '') });
       }
     }
     if (s.stage === 'high') {
       if (hasSpecial) {
         var note = g.indexOf('tekun') > -1 ? 'The policy text says rural students receiving extreme-poverty support. ' : '';
         if (priv) note += 'Private high schools waive fees up to the local public school rate and may charge the difference.';
-        out.push({ kind: 'likely', title: 'Tuition and fee waiver', amt: 'Free', unit: priv ? 'Up to public-school rate' : 'Public senior high', body: 'Public senior high schools waive tuition and fees for students from households lifted out of poverty or monitored for poverty risk, dibao households, rural students receiving extreme-poverty support, students with disabilities, orphans, children without de facto caregivers, and children of martyrs.', who: 'You selected: ' + matched, note: note });
+        out.push({ kind: 'likely', type: 'waiver', title: 'Tuition and fee waiver', amt: 'Free', unit: priv ? 'Up to public-school rate' : 'Public senior high', body: PROGRAMS[4].body, who: 'You selected: ' + matched, note: note });
       }
-      if (needy) out.push({ kind: 'check', title: 'National grant for senior high students', amt: '1800 / 2800', unit: 'yuan/year, average 2300', body: 'For senior high students from families with financial hardship. Paid in two tiers.', who: 'The school must confirm the family\'s financial hardship' });
+      if (needy) out.push({ kind: 'check', type: 'grant', title: 'National grant for senior high students', amt: '1800 / 2800', unit: 'yuan/year, average 2300', min: 1800, max: 2800, body: PROGRAMS[5].body, who: 'The school must confirm the family\'s financial hardship' });
     }
     if (s.stage === 'voc') {
-      out.push({ kind: 'likely', title: 'Tuition waiver', amt: 'Free', unit: priv ? 'Up to public-school rate' : 'Years 1 to 3', body: 'Public vocational schools waive tuition for all full-time students in years 1 to 3.', who: 'All full-time students in years 1 to 3', note: priv ? 'Private vocational schools waive tuition up to the local public school rate and may charge the difference.' : '' });
-      if (s.agri === 'yes' || needy) out.push({ kind: s.agri === 'yes' ? 'likely' : 'check', title: 'National grant for vocational students', amt: '2300', unit: 'yuan/year', body: 'For years 1 to 3: rural students in agriculture-related majors, and students in other majors from families with financial hardship.', who: s.agri === 'yes' ? 'You selected an agriculture-related major' : 'The school must confirm the family\'s financial hardship' });
-      out.push({ kind: 'check', title: 'National scholarship for vocational students', amt: '6000', unit: 'yuan/year', body: 'Students in year 2 or above with excellent grades and conduct can apply, regardless of family income.', who: 'Year 2 or above, outstanding performance' });
+      out.push({ kind: 'likely', type: 'waiver', title: 'Tuition waiver', amt: 'Free', unit: priv ? 'Up to public-school rate' : 'Years 1 to 3', body: PROGRAMS[6].body, who: 'All full-time students in years 1 to 3', note: priv ? 'Private vocational schools waive tuition up to the local public school rate and may charge the difference.' : '' });
+      if (s.agri === 'yes' || needy) out.push({ kind: s.agri === 'yes' ? 'likely' : 'check', type: 'grant', title: 'National grant for vocational students', amt: '2300', unit: 'yuan/year', min: 2300, max: 2300, body: PROGRAMS[7].body, who: s.agri === 'yes' ? 'You selected an agriculture-related major' : 'The school must confirm the family\'s financial hardship' });
+      out.push({ kind: 'check', type: 'scholarship', title: 'National scholarship for vocational students', amt: '6000', unit: 'yuan/year', body: PROGRAMS[8].body, who: 'Year 2 or above, outstanding performance', merit: true });
     }
     return out;
   }
-
-  function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-
+  function progCard(it, tagText) {
+    var a = el('article', 'prog ' + (it.kind || ''));
+    var top = el('div', 'prog-top'); top.appendChild(el('h3', '', it.title));
+    var am = el('div', 'amount'); am.appendChild(el('b', '', it.amt)); am.appendChild(el('small', '', it.unit)); top.appendChild(am); a.appendChild(top);
+    var tags = el('div', 'tags');
+    if (tagText) tags.appendChild(el('span', 'tag ' + (it.kind || ''), tagText));
+    (it.stages || []).forEach(function (s) { tags.appendChild(el('span', 'tag', STAGE_NAMES[s])); });
+    if (it.type) tags.appendChild(el('span', 'tag', TYPE_NAMES[it.type]));
+    a.appendChild(tags);
+    a.appendChild(el('p', '', it.body));
+    var dl = el('dl');
+    dl.appendChild(el('dt', '', 'Who')); dl.appendChild(el('dd', '', it.who));
+    if (it.how) { dl.appendChild(el('dt', '', 'How')); dl.appendChild(el('dd', '', it.how)); }
+    if (it.note) { dl.appendChild(el('dt', '', 'Note')); dl.appendChild(el('dd', '', it.note)); }
+    a.appendChild(dl);
+    return a;
+  }
+  var lastText = '';
   function render() {
     var s = { stage: pick('stage'), board: pick('board'), agri: pick('agri'), own: pick('own'), groups: groups() };
-    document.getElementById('sub-board').hidden = !(s.stage === 'pri' || s.stage === 'mid');
-    document.getElementById('sub-voc').hidden = s.stage !== 'voc';
-    document.getElementById('ow-pri-label').textContent = s.stage === 'kg' ? 'Inclusive private' : 'Private';
-    var items = build(s);
-    var list = document.getElementById('list');
-    var html = items.map(function (it) {
-      return '<article class="card ' + it.kind + '">' +
-        '<div class="card-top"><h3>' + esc(it.title) + '</h3><div class="amount"><b>' + esc(it.amt) + '</b><small>' + esc(it.unit) + '</small></div></div>' +
-        '<span class="tag ' + it.kind + '">' + (it.kind === 'likely' ? 'Likely eligible' : 'Needs school approval or conditions') + '</span>' +
-        '<p>' + esc(it.body) + '</p>' +
-        '<dl><dt>Who</dt><dd>' + esc(it.who) + '</dd>' + (it.note ? '<dt>Note</dt><dd>' + esc(it.note) + '</dd>' : '') + '</dl>' +
-        '</article>';
-    }).join('');
-    var needy = s.groups.length > 0;
-    if (!needy) {
-      html += '<div class="empty">If your family has recently faced hardship, such as a serious illness or a sudden crisis, ask the school whether your child can be recognized as a student with financial hardship. Once recognized, your child may also receive grants or allowances not listed above.</div>';
-    }
-    list.innerHTML = html;
-    document.getElementById('total').innerHTML = '<b>' + items.length + '</b> ' + (items.length === 1 ? 'program' : 'programs');
+    $('sub-board').hidden = !(s.stage === 'pri' || s.stage === 'mid');
+    $('sub-voc').hidden = s.stage !== 'voc';
+    $('ow-pri-label').textContent = s.stage === 'kg' ? 'Inclusive private' : 'Private';
+    var items = build(s), list = $('list'); list.textContent = '';
+    items.forEach(function (it) { list.appendChild(progCard(it, it.kind === 'likely' ? 'Likely eligible' : 'Needs school approval or conditions')); });
+    if (!s.groups.length) list.appendChild(el('div', 'empty', 'If your family has recently faced hardship, such as a serious illness or a sudden crisis, ask the school whether your child can be recognized as a student with financial hardship. Once recognized, your child may also receive grants or allowances not listed here.'));
+    // summary
+    var cash = items.filter(function (x) { return x.min && !x.merit; });
+    var lo = cash.reduce(function (a, x) { return a + x.min; }, 0), hi = cash.reduce(function (a, x) { return a + x.max; }, 0);
+    var waivers = items.filter(function (x) { return x.type === 'waiver'; }).length;
+    var sum = $('summary'); sum.textContent = '';
+    [[String(items.length), items.length === 1 ? 'program may apply' : 'programs may apply'], [String(waivers), waivers === 1 ? 'fee waiver' : 'fee waivers'], [cash.length ? (lo === hi ? lo.toLocaleString('en-US') : lo.toLocaleString('en-US') + '–' + hi.toLocaleString('en-US')) : '0', 'yuan/year in need-based cash aid']].forEach(function (x) { var d = el('div'); d.appendChild(el('b', '', x[0])); d.appendChild(el('small', '', x[1])); sum.appendChild(d); });
+    sum.appendChild(el('p', 'full', 'Estimate only. Cash aid that needs school approval is counted at its lowest and highest tier. Merit scholarships are not counted.'));
+    // questions to ask
+    var ask = $('asklist'); ask.textContent = '';
+    var qs = [];
+    if (items.some(function (x) { return x.kind === 'check' && !x.merit; })) qs.push('How does the school confirm a family\'s financial hardship, and when is the application window this term?');
+    if (s.groups.some(function (x) { return SPECIAL.indexOf(x) > -1; })) qs.push('Which documents do you need to confirm our status (' + s.groups.filter(function (x) { return SPECIAL.indexOf(x) > -1; }).map(function (x) { return DOCS[x].toLowerCase(); }).join('; ') + ')?');
+    if (s.own === 'pri') qs.push('How much of the fee does the waiver cover here, and how much is the difference we pay?');
+    if (s.stage === 'pri' || s.stage === 'mid') qs.push('Is my child counted as boarding or non-boarding for the living allowance?');
+    if (s.stage === 'voc') qs.push('When does the school select students for the national scholarship, and what are the criteria?');
+    qs.push('Which of these programs can be received together, and how and when is the money paid?');
+    qs.push('Who is the student aid contact at the school, and what is the district aid hotline?');
+    qs.forEach(function (q) { ask.appendChild(el('li', '', q)); });
+    lastText = 'My possible student aid (Qingdao 2026 policies, from Know Your Student Aid)\n' + items.map(function (x) { return '- ' + x.title + ': ' + x.amt + ' (' + x.unit + ')' + (x.kind === 'check' ? ' [needs school approval or conditions]' : ''); }).join('\n') + '\n\nQuestions for the school:\n' + qs.map(function (q, i) { return (i + 1) + '. ' + q; }).join('\n');
   }
-
-  document.getElementById('q').addEventListener('change', function (e) {
+  $('q').addEventListener('change', function (e) {
     if (e.target.name === 'g') {
-      if (e.target.value === 'kunnan' && e.target.checked) {
-        // "None of the above" excludes the specific groups
-        SPECIAL.forEach(function (k) { var el = document.getElementById('g-' + k); if (el) el.checked = false; });
-      } else if (e.target.checked) {
-        document.getElementById('g-kunnan').checked = false;
-      }
+      if (e.target.value === 'kunnan' && e.target.checked) SPECIAL.forEach(function (k) { $('g-' + k).checked = false; });
+      else if (e.target.checked) $('g-kunnan').checked = false;
     }
     render();
   });
-  document.getElementById('q').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('q').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('print').addEventListener('click', function () { try { window.print(); } catch (e) {} });
+  function copyText(txt, ok, fail) { try { navigator.clipboard.writeText(txt).then(ok, fail); } catch (e) { fail(); } }
+  $('copy-sum').addEventListener('click', function () {
+    copyText(lastText, function () { $('copy-msg').textContent = 'Summary copied. You can paste it into a message or a note.'; }, function () { $('copy-msg').textContent = 'Copying is not available here. You can use "Print or save" instead.'; });
+  });
 
-  Array.prototype.forEach.call(document.querySelectorAll('button.copy'), function (b) {
+  // ---- programs page
+  var fStage = 'all', fType = 'all';
+  function fButtons(box, opts, getv, setv) {
+    opts.forEach(function (o) {
+      var b = el('button', 'fbtn', o[1]); b.type = 'button'; b.setAttribute('aria-pressed', String(getv() === o[0]));
+      b.addEventListener('click', function () { setv(o[0]); box.querySelectorAll('.fbtn').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); renderPrograms(); });
+      box.appendChild(b);
+    });
+  }
+  fButtons($('f-stage'), [['all', 'All']].concat(Object.keys(STAGE_NAMES).map(function (k) { return [k, STAGE_NAMES[k]]; })), function () { return fStage; }, function (v) { fStage = v; });
+  fButtons($('f-type'), [['all', 'All']].concat(Object.keys(TYPE_NAMES).map(function (k) { return [k, TYPE_NAMES[k]]; })), function () { return fType; }, function (v) { fType = v; });
+  function renderPrograms() {
+    var grid = $('prog-grid'); grid.textContent = '';
+    var shown = PROGRAMS.filter(function (p) { return (fStage === 'all' || p.stages.indexOf(fStage) > -1) && (fType === 'all' || p.type === fType); });
+    shown.forEach(function (p) { grid.appendChild(progCard(p)); });
+    if (!shown.length) grid.appendChild(el('div', 'empty', 'No program matches both filters. Try "All".'));
+    $('prog-count').textContent = 'Showing ' + shown.length + ' of ' + PROGRAMS.length + ' programs.';
+  }
+  renderPrograms();
+  (function () {
+    var rows = [
+      ['Kindergarten', 'Childcare fees waived for listed groups', 'Preschool government grant (needs hardship recognition)', '1,800 or 2,200'],
+      ['Primary', 'Tuition, fees and textbooks free for all', 'Living allowance (needs hardship recognition)', '625 (non-boarding) or 1,250 (boarding)'],
+      ['Junior high', 'Tuition, fees and textbooks free for all', 'Living allowance (needs hardship recognition)', '750 (non-boarding) or 1,500 (boarding)'],
+      ['Senior high', 'Tuition and fees waived for listed groups', 'National grant (needs hardship recognition)', '1,800 or 2,800'],
+      ['Vocational', 'Tuition free for all, years 1 to 3', 'National grant; national scholarship (merit)', '2,300 grant; 6,000 scholarship']
+    ];
+    rows.forEach(function (r) { var tr = el('tr'); r.forEach(function (c, i) { tr.appendChild(el(i === 0 ? 'th' : 'td', i === 3 ? 'num' : '', c)); }); $('glance').appendChild(tr); });
+  })();
+
+  // ---- apply page: checklist + FAQ
+  var CHK = [
+    ['id', 'Child\'s ID card or household register (hukou) page', 'To identify the student'],
+    ['status', 'Certificate showing your family\'s status', 'For example a dibao, extreme-poverty support, or disability certificate'],
+    ['hardship', 'Proof of a recent hardship, if any', 'For example hospital records for a serious illness'],
+    ['form', 'The school\'s application form, filled in', 'Your school hands this out with its aid notice'],
+    ['bank', 'The bank account details the school asks for', 'Only give account details to the school, never a password'],
+    ['contact', 'A phone number the school can reach you on', 'So the school can tell you the result']
+  ];
+  var KEY = 'kysa-checklist';
+  var ticked = {};
+  try { ticked = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { ticked = {}; }
+  function renderChk() {
+    var n = CHK.filter(function (c) { return ticked[c[0]]; }).length;
+    $('chk-bar').style.width = Math.round(n / CHK.length * 100) + '%';
+    $('chk-count').textContent = n + ' of ' + CHK.length + ' ready';
+  }
+  CHK.forEach(function (c) {
+    var li = el('li'), lab = el('label'), cb = el('input'); cb.type = 'checkbox'; cb.checked = !!ticked[c[0]];
+    cb.addEventListener('change', function () { ticked[c[0]] = cb.checked; try { localStorage.setItem(KEY, JSON.stringify(ticked)); } catch (e) {} renderChk(); });
+    var sp = el('span', '', c[1]); sp.appendChild(el('small', '', c[2]));
+    lab.appendChild(cb); lab.appendChild(sp); li.appendChild(lab); $('checklist').appendChild(li);
+  });
+  renderChk();
+  var FAQ = [
+    ['Do I need to apply for free tuition in primary or junior high school?', 'No. All urban and rural students in compulsory education pay no tuition or miscellaneous fees and get free textbooks and workbooks. No application is needed.'],
+    ['What does "Needs school approval" mean?', 'Some grants and allowances are only for students the school has confirmed as coming from a family with financial hardship. The school confirms this first, then pays the aid by tier.'],
+    ['Our family situation changed in the middle of the year. Can we still get help?', 'Ask the school whether your child can be recognized as a student with financial hardship. Once recognized, your child may receive grants or allowances.'],
+    ['My child goes to a private school. Do waivers still apply?', 'Usually waivers at private schools cover only the amount a local public school would charge. Your family pays any difference. Ask the school for the exact amounts.'],
+    ['Can my child receive more than one program?', 'The finder lists every program that may apply. Fee waivers and cash grants cover different things, but ask the school which programs can be combined in your case.'],
+    ['Does applying cost anything?', 'No. You apply through your school, and it is free. Anyone asking you to pay a fee or share a bank card password is not from the aid office.'],
+    ['Is this an official website?', 'No. It is a personal public-interest project that explains the published policies in simple words. It does not file applications, and school and education bureau notices always take precedence.'],
+    ['What about university students or student loans?', 'This site covers kindergarten to senior high and vocational school. A few programs, such as student-origin credit loans, are not applied for at school; ask your district education bureau about them.']
+  ];
+  FAQ.forEach(function (f, i) { var d = el('details'); if (i === 0) d.open = true; d.appendChild(el('summary', '', f[0])); d.appendChild(el('p', '', f[1])); $('faq').appendChild(d); });
+  document.querySelectorAll('button.copy').forEach(function (b) {
     b.addEventListener('click', function () {
-      var el = document.getElementById(b.getAttribute('data-copy'));
-      var txt = el.textContent;
-      function done() { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy number'; }, 1500); }
-      function fallback() { var r = document.createRange(); r.selectNodeContents(el); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Selected, copy it manually'; }
-      try { navigator.clipboard.writeText(txt).then(done, fallback); } catch (err) { fallback(); }
+      var c = $(b.getAttribute('data-copy'));
+      copyText(c.textContent, function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy number'; }, 1500); }, function () { var r = document.createRange(); r.selectNodeContents(c); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Selected, copy it manually'; });
     });
   });
 
   render();
+  go(location.hash.slice(1) || 'overview', true);
 })();
 </script>
-
 </body>
 </html>
